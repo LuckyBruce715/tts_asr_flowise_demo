@@ -87,8 +87,9 @@ class MyCallback(RasrCallBack):
 
                     # 调用TTS服务
                     tts_response = tts_service(response['text'])
+                    #print(tts_response)
                     print('TTS response generated.')
-                    asyncio.run(self.send_tts_response(tts_response))
+                    #asyncio.run(self.send_tts_response(tts_response))
 
                 print("response message:", segment)
 
@@ -125,22 +126,27 @@ def tts_service(text):
     tts_request.set_volume(50)
     tts_request.set_pitch(0)
     tts_request.set_speed(0)
-    tts_request.set_saved(False)  # 不保存到文件
+    tts_request.set_saved(True)
+    path = "./test_audio.wav"
+    tts_request.set_saved_path(path)
 
     result = tts_client.get_ttsc_response(tts_request)
+    print(json.dumps(result, indent=2, ensure_ascii=False))
     audio_data = result['result']['data']
-    if not audio_data:
-        raise ValueError("No audio data received from TTS service.")
+    #print(type(audio_data))
+    #if not audio_data:
+    #    raise ValueError("No audio data received from TTS service.")
     
+    #audio_data_binary = bytes(audio_data, encoding='utf-8')
     # 保存音频数据到本地文件
-    with open('test_audio.wav', 'wb') as f:
-        f.write(audio_data)
+    #with open('test_audio.wav', 'wb') as f:
+    #    f.write(audio_data_binary)
     
     # 使用pydub检查音频格式
-    audio_segment = AudioSegment.from_wav(BytesIO(audio_data))
-    print(f"Channels: {audio_segment.channels}")
-    print(f"Frame rate: {audio_segment.frame_rate}")
-    print(f"Sample width: {audio_segment.sample_width}")
+    #audio_segment = AudioSegment.from_wav(BytesIO(audio_data_binary))
+    #print(f"Channels: {audio_segment.channels}")
+    #print(f"Frame rate: {audio_segment.frame_rate}")
+    #print(f"Sample width: {audio_segment.sample_width}")
 
     return audio_data
 
